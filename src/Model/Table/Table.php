@@ -193,20 +193,21 @@ class Table extends CoreTable {
 	}
 
 	/**
-	 * Shim to provide 2.x way of find('first') for easier upgrade.
-	 *
-	 * @param string $type
+	 * @param Query $query
 	 * @param array $options
-	 * @return Query
-	 */
-	public function find($type = 'all', $options = []) {
-		if ($type === 'first') {
-			return parent::find('all', $options)->first();
-		}
-		if ($type === 'count') {
-			return parent::find('all', $options)->count();
-		}
-		return parent::find($type, $options);
+	 * @return $this
+     */
+	public function findFirst(Query $query, array $options) {
+		return $query->first();
+	}
+
+	/**
+	 * @param Query $query
+	 * @param array $options
+	 * @return $this|array
+     */
+	public function findCount(Query $query, array $options) {
+		return $query->count();
 	}
 
 	/**

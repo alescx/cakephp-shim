@@ -4,43 +4,64 @@ namespace Shim\Test\TestCase\Model\Table;
 use Shim\TestSuite\TestCase;
 use Cake\ORM\TableRegistry;
 use Cake\Core\Configure;
-use Shim\Model\Table\Table;
 use Cake\Database\ValueBinder;
 
 class TableTest extends TestCase {
 
+	/**
+	 * @var \Shim\Model\Table\Table;
+	 */
 	public $Posts;
 
+	/**
+	 * @var \Shim\Model\Table\Table;
+	 */
 	public $Users;
 
+	/**
+	 * @var \Shim\Model\Table\Table;
+	 */
+	public $Authors;
+
+	/**
+	 * @var array
+	 */
 	public $fixtures = ['core.users', 'core.posts', 'core.authors', 'plugin.Shim.Wheels', 'plugin.Shim.Cars'];
 
+	/**
+	 * @return void
+     */
 	public function setUp() {
 		parent::setUp();
 
 		Configure::write('App.namespace', 'TestApp');
 
-		$this->Posts = TableRegistry::get('Shim.Posts', ['className' => '\Shim\Model\Table\Table']);
+		$this->Posts = TableRegistry::get('Shim.Posts', ['className' => 'Shim\Model\Table\Table']);
+		$this->Authors = TableRegistry::get('Shim.Authors', ['className' => 'Shim\Model\Table\Table']);
 		$this->Posts->belongsTo('Authors');
-		$this->Users = TableRegistry::get('Shim.Users', ['className' => '\Shim\Model\Table\Table']);
+		$this->Users = TableRegistry::get('Shim.Users', ['className' => 'Shim\Model\Table\Table']);
 
 		Configure::delete('Shim');
 	}
 
+	/**
+	 * @return void
+     */
 	public function tearDown() {
 		Configure::delete('Shim');
 
 		parent::tearDown();
 	}
 
+	/**
+	 * @return void
+     */
 	public function testInstance() {
-		$this->assertInstanceOf('\Shim\Model\Table\Table', $this->Posts);
-		$this->assertInstanceOf('\Shim\Model\Table\Table', $this->Users);
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Posts);
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Users);
 	}
 
 	/**
-	 * ShimModelTest::testGet()
-	 *
 	 * @return void
 	 */
 	public function testMagicFind() {
@@ -52,8 +73,6 @@ class TableTest extends TestCase {
 	}
 
 	/**
-	 * Test the better findById()
-	 *
 	 * @return void
 	 */
 	public function testGet() {
@@ -135,6 +154,42 @@ class TableTest extends TestCase {
 	}
 
 	/**
+	 * @return void
+	 */
+	public function testFindFirst() {
+		$options = [
+			'order' => ['created' => 'DESC']
+		];
+
+		$this->Wheels = TableRegistry::get('Wheels');
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Wheels);
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Wheels->Cars->target());
+
+		$wheel = $this->Wheels->find('first', $options);
+		$this->assertInstanceOf('\Cake\ORM\Entity', $wheel);
+
+		//FIXME
+		$car = $this->Wheels->Cars->find('first', $options);
+		$this->assertInstanceOf('\Cake\ORM\Entity', $car);
+	}
+
+	/**
+	 * @return void
+	 */
+	public function testFindCount() {
+		$this->Wheels = TableRegistry::get('Wheels');
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Wheels);
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Wheels->Cars->target());
+
+		$count = $this->Wheels->find('count');
+		$this->assertSame(2, $count);
+
+		//FIXME
+		$count = $this->Wheels->Cars->find('count');
+		$this->assertSame(2, $count);
+	}
+
+		/**
 	 * Shim support for saving via saveField() similar to 2.x
 	 *
 	 * @return void
@@ -267,13 +322,13 @@ class TableTest extends TestCase {
 	 */
 	public function testRelationShims() {
 		$this->Wheels = TableRegistry::get('Wheels');
-		$this->assertInstanceOf('\Shim\Model\Table\Table', $this->Wheels);
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Wheels);
 
 		$car = $this->Wheels->Cars->find()->first();
 		$this->assertInstanceOf('\Cake\ORM\Entity', $car);
 
 		$this->Cars = TableRegistry::get('Cars');
-		$this->assertInstanceOf('\Shim\Model\Table\Table', $this->Cars);
+		$this->assertInstanceOf('Shim\Model\Table\Table', $this->Cars);
 
 		$wheels = $this->Cars->Wheels->find()->where(['car_id' => $car['id']]);
 		$wheels->execute();
