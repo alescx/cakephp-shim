@@ -47,13 +47,13 @@ class Table extends CoreTable {
 	public function initialize(array $config) {
 		// Shims
 		if (isset($this->useTable)) {
-			$this->table($this->useTable);
+			$this->setTable($this->useTable);
 		}
 		if (isset($this->primaryKey)) {
-			$this->primaryKey($this->primaryKey);
+			$this->setPrimaryKey($this->primaryKey);
 		}
 		if (isset($this->displayField)) {
-			$this->displayField($this->displayField);
+			$this->setDisplayField($this->displayField);
 		}
 		$this->_shimRelations();
 
@@ -67,10 +67,6 @@ class Table extends CoreTable {
 				}
 				$this->addBehavior($name, $options);
 			}
-		}
-
-		if ($this->createdField || $this->modifiedField && !$this->hasBehavior('Timestamp')) {
-			$this->addBehavior('Timestamp');
 		}
 	}
 
